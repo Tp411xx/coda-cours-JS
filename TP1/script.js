@@ -76,4 +76,4 @@ while (i < eleves.length) {
   }
   i++;
 }
-console.log(eleves[i].moyenne);
+console.log(admis);
