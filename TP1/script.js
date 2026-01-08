@@ -70,10 +70,13 @@ for (let i = 0; i < eleves.length; i++) {
 //tp7
 let i = 0;
 let admis = 0;
+
 while (i < eleves.length) {
-  if (eleves[i].moyenne >= 10) {
-    let admis = admis + 1;
+  if (parseFloat(eleves[i].moyenne) >= 10) {
+    admis++;
   }
+
   i++;
 }
+
 console.log(admis);
