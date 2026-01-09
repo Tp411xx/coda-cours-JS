@@ -46,12 +46,16 @@ console.log(nombre_maxi, indice_maxi);
 console.log(nombre_mini, indice_mini);
 console.log(notes);
 
-// pt3 et 4 : tri par sélection
+let count_echange = 0;
+let count_verification = 0;
+
+// pt3 et 4 et bonus : tri par sélection
 for (let j = 0; j < notes.length; j++) {
   let nombre_mini = notes[j];
   let indice_mini = j;
 
   for (let i = j + 1; i < notes.length; i++) {
+    count_verification++;
     if (notes[i] < nombre_mini) {
       nombre_mini = notes[i];
       indice_mini = i;
@@ -62,6 +66,54 @@ for (let j = 0; j < notes.length; j++) {
   let nombre_en_stock = notes[j];
   notes[j] = notes[indice_mini];
   notes[indice_mini] = nombre_en_stock;
+  count_echange++;
+  console.log(notes);
 }
+console.log(count_verification);
+console.log(count_echange);
 
-console.log(notes);
+//suite bonus
+let nombre_tri = 0;
+
+for (let j = 0; j < notes.length; j++) {
+  let nombre_mini = notes[j];
+  let indice_mini = j;
+
+  for (let i = j + 1; i < notes.length; i++) {
+    count_verification++;
+    if (notes[i] < nombre_mini) {
+      nombre_mini = notes[i];
+      indice_mini = i;
+    }
+  }
+
+  // échange
+  let nombre_en_stock = notes[notes.length - nombre_tri];
+  notes[notes.length - nombre_tri] = notes[indice_mini];
+  notes[indice_mini] = nombre_en_stock;
+  count_echange++;
+  console.log(notes);
+  nombre_tri++;
+}
+console.log(count_verification);
+console.log(count_echange);
+
+for (let j = 0; j < notes.length; j++) {
+  let nombre_mini = notes[j];
+  let indice_mini = j;
+
+  for (let i = j + 1; i < notes.length; i++) {
+    count_verification++;
+    if (notes[i] > nombre_mini) {
+      nombre_mini = notes[i];
+      indice_mini = i;
+    }
+  }
+
+  // échange
+  let nombre_en_stock = notes[j];
+  notes[j] = notes[indice_mini];
+  notes[indice_mini] = nombre_en_stock;
+  count_echange++;
+  console.log(notes);
+}
