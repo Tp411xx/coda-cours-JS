@@ -15,61 +15,280 @@ body {
   justify-content: center;
   align-items: center;
   color: white;
+  gap: 40px;
+  perspective: 1000px;
 }
 
-/* Titre principal */
-body > h1 {
-  margin-bottom: 30px;
-  letter-spacing: 2px;
-  font-size: 1.8rem;
+/* Animation subtile de la grille */
+body::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: linear-gradient(
+      rgba(255, 255, 255, 0.03) 1px,
+      transparent 1px
+    ),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 100px 100px;
+  animation: gridShift 20s linear infinite;
+  pointer-events: none;
 }
 
-/* Cadre portail */
+@keyframes gridShift {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(100px, 100px);
+  }
+}
+
+h1 {
+  font-weight: bold;
+  color: white;
+  text-align: center;
+  font-size: 80px;
+  margin: 0;
+  letter-spacing: 10px;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+  z-index: 10;
+}
+
 .portal {
   border: 2px solid #aaa;
-  padding: 25px;
+  padding: 20px;
   width: 320px;
   text-align: center;
-  background-color: #0d0d0d;
+  background: rgba(17, 17, 17, 0.95);
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.8), inset 0 0 30px rgba(0, 0, 0, 0.5);
+  position: relative;
+  transition: transform 0.3s ease;
+  z-index: 10;
 }
 
-/* Titre portail */
+.portal:hover {
+  transform: translateZ(20px);
+}
+
+/* Effet de profondeur avec les coins */
+.portal::before,
+.portal::after {
+  content: "";
+  position: absolute;
+  border: 2px solid #666;
+  pointer-events: none;
+}
+
+.portal::before {
+  top: -8px;
+  left: -8px;
+  right: -8px;
+  bottom: -8px;
+  opacity: 0.3;
+}
+
+.portal::after {
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  opacity: 0.5;
+}
+
 .portal h2 {
   margin-top: 0;
-  margin-bottom: 20px;
+  border-bottom: 1px solid #aaa;
   padding-bottom: 10px;
-  border-bottom: 1px solid #777;
-  font-weight: normal;
-  letter-spacing: 1px;
+  font-size: 20px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  position: relative;
 }
 
-/* Champs */
+.portal h2::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #fff, transparent);
+  animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
 .portal input {
   width: 100%;
-  margin: 12px 0;
-  padding: 10px;
+  margin: 10px 0;
+  padding: 8px;
   background: #000;
-  border: 1px solid #777;
+  border: 1px solid #aaa;
   color: white;
-  outline: none;
+  transition: all 0.3s;
 }
 
 .portal input:focus {
-  border-color: #fff;
+  outline: none;
+  border-color: #ddd;
+  box-shadow: 0 0 10px rgba(170, 170, 170, 0.3);
+  background: #0a0a0a;
 }
 
-/* Bouton */
+.portal input::placeholder {
+  color: #555;
+}
+
+.portal input:hover {
+  border-color: #ccc;
+}
+
+/* Message erreur */
+.error-msg {
+  color: #f88;
+  font-size: 12px;
+  margin-top: 10px;
+  min-height: 16px;
+}
+
+.error-msg.success {
+  color: #8f8;
+}
+
+/* Conteneur des skins */
+.skins-container {
+  display: grid;
+  grid-template-columns: repeat(3, 64px);
+  gap: 10px;
+  justify-content: center;
+  margin: 15px 0;
+}
+
+.skins-container {
+  max-height: 300px; /* hauteur visible */
+  overflow-y: auto; /* scrollbar verticale */
+  overflow-x: hidden;
+  margin: 15px 0;
+  padding-right: 5px; /* évite que la scrollbar colle */
+}
+
+/* Optionnel : scrollbar stylée (Chrome / Edge) */
+.skins-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.skins-container::-webkit-scrollbar-thumb {
+  background: #666;
+  border-radius: 3px;
+}
+
+.skins-container::-webkit-scrollbar-track {
+  background: #111;
+}
+
+.skin-wrapper {
+  text-align: center;
+}
+
+.skin-wrapper canvas {
+  width: 64px;
+  height: 64px;
+  border: 1px solid #555;
+  cursor: pointer;
+  background: #000;
+  transition: all 0.3s;
+}
+
+.skin-wrapper canvas:hover {
+  border-color: #aaa;
+  transform: scale(1.05);
+}
+
+.skin-wrapper canvas.selected {
+  border: 2px solid #fff;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.skin-wrapper input[type="checkbox"] {
+  margin-top: 5px;
+  width: auto;
+}
+
 button {
-  margin-top: 15px;
-  width: 100%;
-  padding: 10px;
+  padding: 8px 20px;
   background: #000;
   color: white;
-  border: 2px solid #aaa;
+  border: 1px solid #aaa;
   cursor: pointer;
-  letter-spacing: 1px;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+button::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.1);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  transition: width 0.5s, height 0.5s;
 }
 
 button:hover {
-  background: #222;
+  background: #1a1a1a;
+  border-color: #ddd;
+  box-shadow: 0 0 20px rgba(170, 170, 170, 0.3);
+}
+
+button:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+/* Particules */
+.particle {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  background: #666;
+  opacity: 0;
+  animation: particleFloat 15s infinite;
+  pointer-events: none;
+}
+
+@keyframes particleFloat {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.5;
+  }
+  90% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate(calc(50vw - 100px), -100vh);
+    opacity: 0;
+  }
 }
