@@ -11,45 +11,63 @@ body {
     linear-gradient(90deg, #222 1px, transparent 1px);
   background-size: 20px 20px;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   color: white;
 }
 
+/* Titre principal */
+body > h1 {
+  margin-bottom: 30px;
+  letter-spacing: 2px;
+  font-size: 1.8rem;
+}
+
+/* Cadre portail */
 .portal {
   border: 2px solid #aaa;
-  padding: 20px;
+  padding: 25px;
   width: 320px;
   text-align: center;
+  background-color: #0d0d0d;
 }
 
+/* Titre portail */
 .portal h2 {
   margin-top: 0;
-  border-bottom: 1px solid #aaa;
+  margin-bottom: 20px;
   padding-bottom: 10px;
+  border-bottom: 1px solid #777;
+  font-weight: normal;
+  letter-spacing: 1px;
 }
 
+/* Champs */
 .portal input {
   width: 100%;
-  margin: 10px 0;
-  padding: 8px;
+  margin: 12px 0;
+  padding: 10px;
   background: #000;
-  border: 1px solid #aaa;
+  border: 1px solid #777;
   color: white;
+  outline: none;
 }
 
-.sprites {
-  display: flex;
-  justify-content: space-between;
-  margin: 15px 0;
+.portal input:focus {
+  border-color: #fff;
 }
 
+/* Bouton */
 button {
-  padding: 8px 20px;
+  margin-top: 15px;
+  width: 100%;
+  padding: 10px;
   background: #000;
   color: white;
-  border: 1px solid #aaa;
+  border: 2px solid #aaa;
   cursor: pointer;
+  letter-spacing: 1px;
 }
 
 button:hover {
