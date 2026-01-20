@@ -1,20 +1,22 @@
 class GameController {
   constructor() {
-    // Server sends updates at 20 ticks per second
+    // === Server tick config ===
     this.SERVER_TICK_RATE = 20;
-    // Duration between two server ticks in milliseconds
     this.SERVER_INTERVAL = 1000 / this.SERVER_TICK_RATE;
 
-    // Permanently bind "this" at the instance of the GameController class
+    // Bind loop
     this.loop = this.loop.bind(this);
-
-    // Regulates framerate to keep 60fps
     requestAnimationFrame(this.loop);
+
+    // === Game state ===
     this.game = new Game();
+
+    // === Player info ===
     this.name = localStorage.getItem("name");
     this.serverUrl = "ws://localhost:8000/ws";
-    //this.serverUrl = localStorage.getItem("serverUrl");
     this.spritePath = localStorage.getItem("spritePath");
+
+    // === Input state ===
     this.inputState = {
       up: false,
       down: false,
@@ -23,11 +25,18 @@ class GameController {
       attack: false,
     };
 
+    // === WebSocket ===
     this.socket = new WebSocket(this.serverUrl);
     this.initSocket();
+
+    // === Input handling ===
     this.initInput();
+
+    // === Send inputs to backend ===
+    this.startInputSender();
   }
 
+  // ================= SOCKET =================
   initSocket() {
     this.socket.onopen = () => {
       console.log("Connexion ouverte !");
@@ -38,31 +47,57 @@ class GameController {
         }),
       );
     };
+
     this.socket.onmessage = (e) => {
-      console.log("Message reçu !");
-      const new_message = JSON.parse(e.data);
-      this.game.update(new_message);
+      const gameStateFromServer = JSON.parse(e.data);
+      console.log("Snapshot reçu :", gameStateFromServer);
+      this.game.update(gameStateFromServer);
     };
   }
+
+  // ================= INPUT =================
   initInput() {
-    this.Touche = "";
     window.addEventListener("keydown", (e) => {
-      this.Touche = e.key;
-      console.log(this.Touche);
+      this.updateInputState(e.key, true);
+      console.log(this.inputState);
     });
 
     window.addEventListener("keyup", (e) => {
-      this.Touche = e.key;
+      this.updateInputState(e.key, false);
+      console.log(this.inputState);
     });
   }
 
-  // === Main render loop ===
+  updateInputState(key, value) {
+    if (key === "z") this.inputState.up = value;
+    if (key === "s") this.inputState.down = value;
+    if (key === "q") this.inputState.left = value;
+    if (key === "d") this.inputState.right = value;
+    if (key === " ") this.inputState.attack = value;
+  }
+
+  // ================= SEND INPUTS =================
+  startInputSender() {
+    setInterval(() => {
+      if (this.socket.readyState !== WebSocket.OPEN) return;
+
+      this.socket.send(
+        JSON.stringify({
+          type: "input",
+          input: this.inputState,
+        }),
+      );
+    }, this.SERVER_INTERVAL);
+  }
+
+  // ================= GAME LOOP =================
   loop(timestamp) {
-    // Request the next frame
+    // Pour tests uniquement
+    // console.log(this.game.players);
+
     requestAnimationFrame(this.loop);
   }
 }
 
-// === Start the game controller by instantiating the GameController class ===
-// This line will execute the constructor (e.g, launch the frontend)
+// === Start game ===
 const myGame = new GameController();
