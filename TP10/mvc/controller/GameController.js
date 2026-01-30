@@ -1,14 +1,17 @@
-class GameController {
-  constructor() {
+import Game from "../model/Game.js";
+import GameView from "../view/GameView.js";
+
+export default class GameController {
+  constructor(game, gameView) {
     // Retrieve player name, server address and chosen skin from localStorage (turned in at portal)
     this.pseudo = localStorage.getItem("pseudo");
-    // this.serverUrl = localStorage.getItem("serverUrl");
-    this.serverUrl = "localhost:8000";
+    this.serverUrl = localStorage.getItem("serverUrl");
+    // this.serverUrl = "localhost:8000";
     this.skinPath = localStorage.getItem("skinPath");
 
     // Create the Game instance that will store the game state (players, timer, flags)
-    this.game = new Game();
-    this.view = new GameView(this.game);
+    this.game = game;
+    this.view = gameView;
 
     // Create a new WebSocket connection to the backend server
     console.log(`ws://${this.serverUrl}/ws`);
@@ -62,17 +65,9 @@ class GameController {
 
     // Triggered when a message is received from the server
     this.socket.onmessage = (event) => {
-      // Save the time of this server update (useful for interpolation)
-
-      // Parse the received game state
       const gameState = JSON.parse(event.data);
-      console.log("test1");
-
-      console.log(gameState);
-
-      // Synchronize frontend game state with backend data
+      this.lastServerUpdate = performance.now(); // Reset du chrono au reçu
       this.game.update(gameState);
-      this.lastServerUpdate = performance.now();
     };
 
     // Triggered when the connection is closed
@@ -147,14 +142,19 @@ class GameController {
 
   // === Main render loop ===
   loop(timestamp) {
-    // Dessiner le jeu
-    this.view.render();
+    // Calcul du temps écoulé depuis le dernier tick serveur
+    const elapsedSinceLastUpdate = timestamp - this.lastServerUpdate;
 
-    console.log("liste players", this.game.players);
-    // Prochaine frame
-    requestAnimationFrame(this.loop);
+    // Alpha est borné entre 0 et 1
+    let alpha = elapsedSinceLastUpdate / this.SERVER_INTERVAL;
+    alpha = Math.min(1, Math.max(0, alpha));
+
+    // On applique l'interpolation à chaque joueur avant le rendu
+    for (let id in this.game.players) {
+      this.game.players[id].interpolate(alpha);
+    }
+
+    this.view.render();
+    requestAnimationFrame((t) => this.loop(t));
   }
 }
-
-// === Start the game controller ===
-new GameController();
